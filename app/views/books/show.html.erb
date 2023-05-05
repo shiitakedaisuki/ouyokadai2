@@ -34,13 +34,25 @@
               <%= link_to 'Destroy', book_book_comment_path(@book.id,book_comment.id), method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger" %>
             <% end %>
           <% end %>
-        </div>
-        <div>
+          <!--ここからいいね機能追加-->
+          <% if @post_image.favorited_by?(current_user) %>
+            <p>
+              <%= link_to book_favorites_path(@post_image), method: :delete do %>
+                ♥<%= @post_image.favorites.count %> いいね
+              <% end %>
+            </p>
+            <% else %>
+            <p>
+              <%= link_to book_favorites_path(@post_image), method: :post do %>
+                ♡<%= @post_image.favorites.count %> いいね
+              <% end %>
+            </p>
+          <% end %>
+        <!--ここまでいいね機能-->
           <%= form_with model: [@book, @bookcomment] do |f| %>
             <%= f.text_area :comment, rows: '5', placeholder: "コメントをここに" %>
             <%= f.submit "送信する" %>
           <% end %>
-        </div>
     </div>
   </div>
 </div>

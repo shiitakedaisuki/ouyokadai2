@@ -21,34 +21,42 @@
                 <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %></td>
                 <td><%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%></td>
               <% end %>
+              <!--ここからいいね機能追加-->
+                <td>
+                  <% if @book.favorited_by?(current_user) %>
+                      <%= link_to book_favorites_path(@book), method: :delete do %>
+                        ♥<%= @book.favorites.count %> いいね
+                      <% end %>
+                  <% else %>
+                      <%= link_to book_favorites_path(@book), method: :post do %>
+                        ♡<%= @book.favorites.count %> いいね
+                      <% end %>
+                  <% end %>
+                </td>
+              <!--ここまでいいね機能-->
+              
+              <!--ここからコメント件数-->
+              <td>
+                コメント件数：<%= @post_bookcomments.count %>
+                
+                </td>
+          <!--ここまでコメント件数-->
         </tr>
       </table>
       
+              <div>
+                <% @post_bookcomments.each do |book_comment| %>
+                  <p><%= image_tag book_comment.user.get_profile_image, size:"100x100" %>
+                  <%= book_comment.user.name %>
+                  <%= book_comment.comment %>
+                  <% if book_comment.user == current_user %>
+                    <%= link_to 'Destroy', book_book_comment_path(@book.id,book_comment.id), method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger" %>
+                  <% end %>
+                  </p>
+                <% end %>
+              </div>
+      
       <div>
-          <p>コメント件数：<%= @post_bookcomments.count %></p>
-          <% @post_bookcomments.each do |book_comment| %>
-            <p><%= image_tag book_comment.user.get_profile_image %></p>
-            <%= book_comment.user.name %>
-            <%= book_comment.created_at.strftime('%Y/%m/%d') %><%= book_comment.comment %>
-            <% if book_comment.user == current_user %>
-              <%= link_to 'Destroy', book_book_comment_path(@book.id,book_comment.id), method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger" %>
-            <% end %>
-          <% end %>
-          <!--ここからいいね機能追加-->
-          <% if @post_image.favorited_by?(current_user) %>
-            <p>
-              <%= link_to book_favorites_path(@post_image), method: :delete do %>
-                ♥<%= @post_image.favorites.count %> いいね
-              <% end %>
-            </p>
-            <% else %>
-            <p>
-              <%= link_to book_favorites_path(@post_image), method: :post do %>
-                ♡<%= @post_image.favorites.count %> いいね
-              <% end %>
-            </p>
-          <% end %>
-        <!--ここまでいいね機能-->
           <%= form_with model: [@book, @bookcomment] do |f| %>
             <%= f.text_area :comment, rows: '5', placeholder: "コメントをここに" %>
             <%= f.submit "送信する" %>
